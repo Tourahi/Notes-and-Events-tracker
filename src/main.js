@@ -3,8 +3,14 @@ const nodePath = require('path');
 const exphbs   = require('express-handlebars');
 const methodOverride = require('method-override');
 const session  = require('express-session');
+const morgan = require('morgan')
+const connectDB = require('./database.js');
+const dotenv    = require('dotenv');
+
 // Initialisations
+dotenv.config();
 const app = express();
+connectDB();
 
 // Options Objects
 const exphbsOpt = { // handlebars options
@@ -30,12 +36,18 @@ app.set('view engine' , '.hbs');
 app.use(express.urlencoded({ extended : false }));
 app.use(methodOverride('_method'));
 app.use(session(sessionOpt));
+app.use(morgan('dev'))
+
 // Global variables
 
 // Routes
+app.use('/',require('./routes/index'));
+app.use('/users',require('./routes/users'));
+app.use('/notes',require('./routes/notes'));
+app.use('/tasks',require('./routes/tasks'));
 
 // Static files
-
+app.use(express.static(nodePath.join(__dirname , 'public')));
 // Server is listenning
 
 app.listen(app.get('port') , () =>{
